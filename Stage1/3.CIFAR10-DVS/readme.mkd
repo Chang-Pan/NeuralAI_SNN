@@ -3,3 +3,5 @@
 `cifar10dvs_preprocess_251130.ipynb` by zxl：数据集下载，格式转换与预览.
 
 `cifar10dvs_show_251130.ipynb`  by zxl：数据集可视化，辅助预处理参数调控.
+
+`cifar10dvs_snn_train_251130.ipynb` by zxl: 网络训练，目前有过拟合/梯度消失等问题，需要调整.
