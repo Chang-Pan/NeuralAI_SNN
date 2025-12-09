@@ -1,0 +1,154 @@
+[I 2025-12-09 11:38:17,325] A new study created in memory with name: no-name-fce9bb23-8cd1-4e77-bba8-c1ae64c75550
+[I 2025-12-09 11:40:24,207] Trial 0 finished with value: 73.07 and parameters: {'alpha': 6.214578822069883}. Best is trial 0 with value: 73.07.
+[I 2025-12-09 11:42:26,669] Trial 1 finished with value: 70.08 and parameters: {'alpha': 1.828732377854234}. Best is trial 0 with value: 73.07.
+[I 2025-12-09 11:44:28,360] Trial 2 finished with value: 70.48 and parameters: {'alpha': 1.9061316181171044}. Best is trial 0 with value: 73.07.
+[I 2025-12-09 11:46:34,096] Trial 3 finished with value: 56.81 and parameters: {'alpha': 121.64799446789938}. Best is trial 0 with value: 73.07.
+[I 2025-12-09 11:48:40,223] Trial 4 finished with value: 60.25 and parameters: {'alpha': 76.99982044325965}. Best is trial 0 with value: 73.07.
+[I 2025-12-09 11:48:53,586] Trial 5 pruned.
+[I 2025-12-09 11:50:18,707] Trial 6 pruned.
+[I 2025-12-09 11:50:30,722] Trial 7 pruned.
+[I 2025-12-09 11:50:43,636] Trial 8 pruned.
+[I 2025-12-09 11:51:36,950] Trial 9 pruned.
+[I 2025-12-09 11:53:43,516] Trial 10 finished with value: 72.31 and parameters: {'alpha': 6.9679430687813175}. Best is trial 0 with value: 73.07.
+[I 2025-12-09 11:55:47,746] Trial 11 finished with value: 71.77 and parameters: {'alpha': 6.824558451418322}. Best is trial 0 with value: 73.07.
+[I 2025-12-09 11:57:48,765] Trial 12 finished with value: 71.57 and parameters: {'alpha': 7.865697728200832}. Best is trial 0 with value: 73.07.
+[I 2025-12-09 11:58:39,209] Trial 13 pruned.
+[I 2025-12-09 11:58:51,614] Trial 14 pruned.
+[I 2025-12-09 11:59:52,500] Trial 15 pruned.
+[I 2025-12-09 12:01:53,817] Trial 16 finished with value: 72.95 and parameters: {'alpha': 12.546858443722993}. Best is trial 0 with value: 73.07.
+[I 2025-12-09 12:02:06,309] Trial 17 pruned.
+[I 2025-12-09 12:02:18,396] Trial 18 pruned.
+[I 2025-12-09 12:02:30,765] Trial 19 pruned.
+[I 2025-12-09 12:02:43,857] Trial 20 pruned.
+[I 2025-12-09 12:02:56,365] Trial 21 pruned.
+[I 2025-12-09 12:04:38,898] Trial 22 pruned.
+[I 2025-12-09 12:04:51,091] Trial 23 pruned.
+[I 2025-12-09 12:05:03,396] Trial 24 pruned.
+[I 2025-12-09 12:05:53,996] Trial 25 pruned.
+[I 2025-12-09 12:06:06,208] Trial 26 pruned.
+[I 2025-12-09 12:06:18,369] Trial 27 pruned.
+[I 2025-12-09 12:06:31,102] Trial 28 pruned.
+[I 2025-12-09 12:06:43,391] Trial 29 pruned.
+[I 2025-12-09 12:07:33,273] Trial 30 pruned.
+[I 2025-12-09 12:08:09,309] Trial 31 pruned.
+[I 2025-12-09 12:08:47,597] Trial 32 pruned.
+[I 2025-12-09 12:09:00,114] Trial 33 pruned.
+[I 2025-12-09 12:09:12,312] Trial 34 pruned.
+[I 2025-12-09 12:11:18,798] Trial 35 finished with value: 72.4 and parameters: {'alpha': 7.8058706294021105}. Best is trial 0 with value: 73.07.
+[I 2025-12-09 12:11:32,057] Trial 36 pruned.
+[I 2025-12-09 12:11:56,654] Trial 37 pruned.
+[I 2025-12-09 12:12:09,015] Trial 38 pruned.
+[I 2025-12-09 12:12:21,067] Trial 39 pruned.
+[I 2025-12-09 12:12:33,754] Trial 40 pruned.
+[I 2025-12-09 12:14:03,344] Trial 41 pruned.
+[I 2025-12-09 12:14:15,397] Trial 42 pruned.
+[I 2025-12-09 12:14:52,657] Trial 43 pruned.
+[I 2025-12-09 12:15:04,639] Trial 44 pruned.
+[I 2025-12-09 12:15:16,717] Trial 45 pruned.
+[I 2025-12-09 12:15:43,206] Trial 46 pruned.
+[I 2025-12-09 12:15:55,908] Trial 47 pruned.
+[I 2025-12-09 12:16:08,256] Trial 48 pruned.
+[I 2025-12-09 12:16:20,962] Trial 49 pruned.
+[I 2025-12-09 12:16:20,963] A new study created in memory with name: no-name-a80876f6-2990-42e6-b518-e9fadf4d7e43
+[I 2025-12-09 12:18:22,134] Trial 0 finished with value: 72.35 and parameters: {'alpha': 4.882451518375956}. Best is trial 0 with value: 72.35.
+[I 2025-12-09 12:20:22,866] Trial 1 finished with value: 68.59 and parameters: {'alpha': 10.355526209732343}. Best is trial 0 with value: 72.35.
+[I 2025-12-09 12:22:22,930] Trial 2 finished with value: 10.0 and parameters: {'alpha': 16.57431173560191}. Best is trial 0 with value: 72.35.
+[I 2025-12-09 12:24:27,247] Trial 3 finished with value: 10.0 and parameters: {'alpha': 13.895206638520134}. Best is trial 0 with value: 72.35.
+[I 2025-12-09 12:26:27,771] Trial 4 finished with value: 71.54 and parameters: {'alpha': 8.696888835607806}. Best is trial 0 with value: 72.35.
+[I 2025-12-09 12:26:40,314] Trial 5 pruned.
+[I 2025-12-09 12:26:52,841] Trial 6 pruned.
+[I 2025-12-09 12:27:16,552] Trial 7 pruned.
+[I 2025-12-09 12:27:29,291] Trial 8 pruned.
+[I 2025-12-09 12:27:41,260] Trial 9 pruned.
+[I 2025-12-09 12:29:38,904] Trial 10 finished with value: 71.91 and parameters: {'alpha': 4.125569798385244}. Best is trial 0 with value: 72.35.
+[I 2025-12-09 12:31:42,435] Trial 11 finished with value: 72.63 and parameters: {'alpha': 4.458497405042783}. Best is trial 11 with value: 72.63.
+[I 2025-12-09 12:33:44,120] Trial 12 finished with value: 72.94 and parameters: {'alpha': 5.182676611030846}. Best is trial 12 with value: 72.94.
+[I 2025-12-09 12:35:45,716] Trial 13 finished with value: 73.47 and parameters: {'alpha': 5.5490728865767345}. Best is trial 13 with value: 73.47.
+[I 2025-12-09 12:35:57,624] Trial 14 pruned.
+[I 2025-12-09 12:36:10,447] Trial 15 pruned.
+[I 2025-12-09 12:36:47,312] Trial 16 pruned.
+[I 2025-12-09 12:37:35,496] Trial 17 pruned.
+[I 2025-12-09 12:37:48,497] Trial 18 pruned.
+[I 2025-12-09 12:39:49,224] Trial 19 finished with value: 72.2 and parameters: {'alpha': 5.923175854952198}. Best is trial 13 with value: 73.47.
+[I 2025-12-09 12:40:12,893] Trial 20 pruned.
+[I 2025-12-09 12:40:48,802] Trial 21 pruned.
+[I 2025-12-09 12:41:00,700] Trial 22 pruned.
+[I 2025-12-09 12:41:35,223] Trial 23 pruned.
+[I 2025-12-09 12:41:48,618] Trial 24 pruned.
+[I 2025-12-09 12:42:23,597] Trial 25 pruned.
+[I 2025-12-09 12:42:35,475] Trial 26 pruned.
+[I 2025-12-09 12:42:46,985] Trial 27 pruned.
+[I 2025-12-09 12:42:59,806] Trial 28 pruned.
+[I 2025-12-09 12:43:12,346] Trial 29 pruned.
+[I 2025-12-09 12:43:24,640] Trial 30 pruned.
+[I 2025-12-09 12:43:37,262] Trial 31 pruned.
+[I 2025-12-09 12:43:49,510] Trial 32 pruned.
+[I 2025-12-09 12:45:52,355] Trial 33 finished with value: 73.04 and parameters: {'alpha': 6.502074580975219}. Best is trial 13 with value: 73.47.
+[I 2025-12-09 12:46:04,516] Trial 34 pruned.
+[I 2025-12-09 12:48:07,003] Trial 35 finished with value: 72.32 and parameters: {'alpha': 7.007030050879878}. Best is trial 13 with value: 73.47.
+[I 2025-12-09 12:48:18,485] Trial 36 pruned.
+[I 2025-12-09 12:48:29,797] Trial 37 pruned.
+[I 2025-12-09 12:48:42,618] Trial 38 pruned.
+[I 2025-12-09 12:48:55,209] Trial 39 pruned.
+[I 2025-12-09 12:49:08,194] Trial 40 pruned.
+[I 2025-12-09 12:49:43,337] Trial 41 pruned.
+[I 2025-12-09 12:50:07,127] Trial 42 pruned.
+[I 2025-12-09 12:50:20,054] Trial 43 pruned.
+[I 2025-12-09 12:50:32,835] Trial 44 pruned.
+[I 2025-12-09 12:50:44,691] Trial 45 pruned.
+[I 2025-12-09 12:51:21,538] Trial 46 pruned.
+[I 2025-12-09 12:51:33,349] Trial 47 pruned.
+[I 2025-12-09 12:51:56,430] Trial 48 pruned.
+[I 2025-12-09 12:52:32,779] Trial 49 pruned.
+[I 2025-12-09 12:52:32,780] A new study created in memory with name: no-name-90205ce4-8af2-491d-a5d8-fd8d8f67abbb
+[I 2025-12-09 12:54:33,444] Trial 0 finished with value: 10.0 and parameters: {'alpha': 7.909641764559672}. Best is trial 0 with value: 10.0.
+[I 2025-12-09 12:56:32,909] Trial 1 finished with value: 10.0 and parameters: {'alpha': 5.483645597639612}. Best is trial 0 with value: 10.0.
+[I 2025-12-09 12:58:33,718] Trial 2 finished with value: 10.0 and parameters: {'alpha': 8.13936126614978}. Best is trial 0 with value: 10.0.
+[I 2025-12-09 13:00:33,471] Trial 3 finished with value: 10.0 and parameters: {'alpha': 8.64862942837336}. Best is trial 0 with value: 10.0.
+[I 2025-12-09 13:02:34,234] Trial 4 finished with value: 10.0 and parameters: {'alpha': 1.5915138579534238}. Best is trial 0 with value: 10.0.
+[I 2025-12-09 13:04:35,413] Trial 5 finished with value: 10.0 and parameters: {'alpha': 9.3766071591792}. Best is trial 0 with value: 10.0.
+[I 2025-12-09 13:06:37,429] Trial 6 finished with value: 10.0 and parameters: {'alpha': 4.6343972740361625}. Best is trial 0 with value: 10.0.
+[I 2025-12-09 13:08:39,150] Trial 7 finished with value: 10.0 and parameters: {'alpha': 2.2842382728133477}. Best is trial 0 with value: 10.0.
+[I 2025-12-09 13:10:41,038] Trial 8 finished with value: 10.0 and parameters: {'alpha': 6.1010237392966}. Best is trial 0 with value: 10.0.
+[I 2025-12-09 13:12:39,100] Trial 9 finished with value: 68.59 and parameters: {'alpha': 0.4278121938008621}. Best is trial 9 with value: 68.59.
+[I 2025-12-09 13:14:38,556] Trial 10 finished with value: 56.85 and parameters: {'alpha': 0.13940639659038045}. Best is trial 9 with value: 68.59.
+[I 2025-12-09 13:16:38,284] Trial 11 finished with value: 60.18 and parameters: {'alpha': 0.15738364557467233}. Best is trial 9 with value: 68.59.
+[I 2025-12-09 13:18:40,294] Trial 12 finished with value: 66.84 and parameters: {'alpha': 0.26123865894783055}. Best is trial 9 with value: 68.59.
+[I 2025-12-09 13:20:40,161] Trial 13 finished with value: 10.0 and parameters: {'alpha': 2.878993705784026}. Best is trial 9 with value: 68.59.
+[I 2025-12-09 13:22:41,429] Trial 14 finished with value: 10.0 and parameters: {'alpha': 3.782843801676819}. Best is trial 9 with value: 68.59.
+[I 2025-12-09 13:24:44,262] Trial 15 finished with value: 10.0 and parameters: {'alpha': 1.3306581017456556}. Best is trial 9 with value: 68.59.
+[I 2025-12-09 13:26:46,395] Trial 16 finished with value: 10.0 and parameters: {'alpha': 1.2200736219876678}. Best is trial 9 with value: 68.59.
+[I 2025-12-09 13:28:47,277] Trial 17 finished with value: 10.0 and parameters: {'alpha': 3.0229193284529265}. Best is trial 9 with value: 68.59.
+[I 2025-12-09 13:30:47,715] Trial 18 finished with value: 10.0 and parameters: {'alpha': 3.855426343741545}. Best is trial 9 with value: 68.59.
+[I 2025-12-09 13:32:48,372] Trial 19 finished with value: 71.67 and parameters: {'alpha': 0.7836178857930685}. Best is trial 19 with value: 71.67.
+[I 2025-12-09 13:34:50,501] Trial 20 finished with value: 10.0 and parameters: {'alpha': 6.834040199980656}. Best is trial 19 with value: 71.67.
+[I 2025-12-09 13:36:50,741] Trial 21 finished with value: 71.12 and parameters: {'alpha': 0.6711333774899292}. Best is trial 19 with value: 71.67.
+[I 2025-12-09 13:38:50,312] Trial 22 finished with value: 10.0 and parameters: {'alpha': 1.932702129125842}. Best is trial 19 with value: 71.67.
+[I 2025-12-09 13:41:00,834] Trial 23 finished with value: 10.0 and parameters: {'alpha': 1.3695379539090142}. Best is trial 19 with value: 71.67.
+[I 2025-12-09 13:43:08,302] Trial 24 finished with value: 72.15 and parameters: {'alpha': 0.8294820110417747}. Best is trial 24 with value: 72.15.
+[I 2025-12-09 13:45:17,970] Trial 25 finished with value: 10.0 and parameters: {'alpha': 2.679038501001604}. Best is trial 24 with value: 72.15.
+[I 2025-12-09 13:47:22,279] Trial 26 finished with value: 10.0 and parameters: {'alpha': 3.9302258890743826}. Best is trial 24 with value: 72.15.
+[I 2025-12-09 13:49:31,825] Trial 27 finished with value: 72.21 and parameters: {'alpha': 0.9119352657237353}. Best is trial 27 with value: 72.21.
+[I 2025-12-09 13:51:45,462] Trial 28 finished with value: 68.97 and parameters: {'alpha': 1.020628372280956}. Best is trial 27 with value: 72.21.
+[I 2025-12-09 13:53:57,405] Trial 29 finished with value: 10.0 and parameters: {'alpha': 2.1966764804844234}. Best is trial 27 with value: 72.21.
+[I 2025-12-09 13:56:01,683] Trial 30 finished with value: 10.0 and parameters: {'alpha': 3.3731497697134594}. Best is trial 27 with value: 72.21.
+[I 2025-12-09 13:58:00,901] Trial 31 finished with value: 71.07 and parameters: {'alpha': 0.9932492366312715}. Best is trial 27 with value: 72.21.
+[I 2025-12-09 14:00:03,516] Trial 32 finished with value: 69.23 and parameters: {'alpha': 0.5728440575555727}. Best is trial 27 with value: 72.21.
+[I 2025-12-09 14:03:13,429] Trial 33 finished with value: 10.0 and parameters: {'alpha': 1.9870561756351706}. Best is trial 27 with value: 72.21.
+[I 2025-12-09 14:06:29,746] Trial 34 finished with value: 10.0 and parameters: {'alpha': 4.795284969185673}. Best is trial 27 with value: 72.21.
+[I 2025-12-09 14:09:44,587] Trial 35 finished with value: 70.67 and parameters: {'alpha': 0.7812451977470249}. Best is trial 27 with value: 72.21.
+[I 2025-12-09 14:12:59,560] Trial 36 finished with value: 10.0 and parameters: {'alpha': 1.6308834056875068}. Best is trial 27 with value: 72.21.
+[I 2025-12-09 14:16:17,688] Trial 37 finished with value: 10.0 and parameters: {'alpha': 7.675096180420957}. Best is trial 27 with value: 72.21.
+[I 2025-12-09 14:19:49,883] Trial 38 finished with value: 10.0 and parameters: {'alpha': 9.905307269013399}. Best is tri
+al 27 with value: 72.21.
+[I 2025-12-09 14:23:13,808] Trial 39 finished with value: 10.0 and parameters: {'alpha': 5.424944454719331}. Best is trial 27 with value: 72.21.
+[I 2025-12-09 14:26:46,809] Trial 40 finished with value: 10.0 and parameters: {'alpha': 2.512368463232499}. Best is trial 27 with value: 72.21.
+[I 2025-12-09 14:30:11,691] Trial 41 finished with value: 71.34 and parameters: {'alpha': 0.7988723433417564}. Best is trial 27 with value: 72.21.
+[I 2025-12-09 14:33:43,795] Trial 42 finished with value: 71.01 and parameters: {'alpha': 0.8155318049650583}. Best is trial 27 with value: 72.21.
+[I 2025-12-09 14:37:15,585] Trial 43 finished with value: 10.0 and parameters: {'alpha': 1.626687229252767}. Best is trial 27 with value: 72.21.
+[I 2025-12-09 14:40:46,504] Trial 44 finished with value: 70.11 and parameters: {'alpha': 0.713105123969501}. Best is trial 27 with value: 72.21.
+[I 2025-12-09 14:44:18,743] Trial 45 finished with value: 60.18 and parameters: {'alpha': 0.16322635671782004}. Best is trial 27 with value: 72.21.
+[I 2025-12-09 14:47:38,023] Trial 46 finished with value: 10.0 and parameters: {'alpha': 1.8603797306589742}. Best is trial 27 with value: 72.21.
+[I 2025-12-09 14:50:57,890] Trial 47 finished with value: 69.77 and parameters: {'alpha': 0.5864512911889435}. Best is trial 27 with value: 72.21.
+[I 2025-12-09 14:54:16,559] Trial 48 finished with value: 10.0 and parameters: {'alpha': 1.2209496410024578}. Best is trial 27 with value: 72.21.
+[I 2025-12-09 14:57:29,666] Trial 49 finished with value: 10.0 and parameters: {'alpha': 2.338567722627132}. Best is trial 27 with value: 72.21.
