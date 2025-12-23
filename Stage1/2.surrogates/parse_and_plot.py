@@ -93,7 +93,7 @@ def plot_combined_figure(df, baseline_infos, outfile):
         pivot = pivot.reindex(sorted(pivot.columns), axis=1)
         
         im = ax.imshow(pivot.values, origin="lower", cmap="viridis", aspect='auto')
-        ax.set_title(f"{surrogate} Accuracy Heatmap")
+        ax.set_title(f"{surrogate}", fontsize=20)
         ax.set_xlabel("Learning Rate")
         ax.set_ylabel("Alpha")
         
@@ -111,16 +111,18 @@ def plot_combined_figure(df, baseline_infos, outfile):
     
     summary_text = "Baseline Accuracy Target: 70% (from run_cifar10.py)\n\n"
     summary_text += "Fastest Baseline Results:\n"
-    summary_text += "-" * 60 + "\n"
+    summary_text += "-" * 40 + "\n"
     
     for surrogate in surrogates:
         info = baseline_infos.get(surrogate)
         if info is not None:
-            summary_text += f"Model: {surrogate} | Fastest Baseline lr={info['lr']:.0e}, alpha={info['alpha']:.3g}, epoch={int(info['baseline_epoch'])} | best_acc={info['best_acc']:.2f}%\n"
+            summary_text += f"Model: {surrogate}\n"
+            summary_text += f"Fastest Baseline: lr={info['lr']:.0e}, alpha={info['alpha']:.3g}, epoch={int(info['baseline_epoch'])}\n"
+            summary_text += f"Best Acc: {info['best_acc']:.2f}%\n\n"
         else:
-            summary_text += f"Model: {surrogate} | Did not reach baseline.\n"
+            summary_text += f"Model: {surrogate}\nDid not reach baseline.\n\n"
 
-    ax_text.text(0.05, 0.9, summary_text, fontsize=10, va='top', family='monospace')
+    ax_text.text(0.05, 0.9, summary_text, fontsize=18, va='top', family='monospace')
     
     plt.tight_layout()
     plt.savefig(outfile)
