@@ -1,0 +1,280 @@
+\documentclass[UTF8]{ctexart}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{float}
+\usepackage{subcaption}
+\usepackage{wrapfig}
+\usepackage{hyperref}
+\usepackage[numbers]{natbib}
+\setlength{\bibsep}{0.2ex}
+% --- 定义无编号脚注命令 ---
+\newcommand\blfootnote[1]{%
+  \begingroup
+  \renewcommand\thefootnote{}\footnote{#1}%
+  \addtocounter{footnote}{-1}%
+  \endgroup
+}
+
+% Set page geometry
+\geometry{a4paper, scale=0.82}
+
+\title{脉冲神经网络学习方法设计与验证}
+\author{\blfootnote{本报告为北京大学《NeuroAI：从脑科学到类脑智能》课程大作业, 本文代码及实验数据见 \url{https://github.com/Chang-Pan/NeuralAI_SNN}}朱信霖\thanks{负责阶段一 1, 3部分}\quad 蒋徐祺\thanks{负责阶段一 2部分}\quad 潘畅\thanks{负责阶段二部分}}
+
+\begin{document}
+
+\maketitle
+
+
+
+\begin{abstract}
+
+脉冲神经网络（SNN）凭借其时空稀疏表征与超低能耗特性，被视为实现类脑智能的重要途径，但其离散脉冲发放导致的梯度弥散难题限制了深层网络的性能。本文系统性地研究了SNN的有监督学习范式，涵盖\textbf{激活驱动（Activation-based）}与\textbf{事件驱动（Event-driven）}两种路径。在激活驱动研究中，我们构建了卷积SNN，对比了多种替代梯度函数（Surrogate Gradient），并首次引入深层神经网络动力学理论分析了SNN的梯度流稳定性。研究发现，SNN训练表现出显著的动力学相变特性，其性能在“混沌边缘”（$\chi \approx 1$）达到最优，证明了参数初始化对梯度传播的决定性作用。在事件驱动研究中，本文设计了基于精确脉冲时刻的反向传播算法，通过引入Kernel Loss等时序损失函数，实现了对神经元动力学特性的深度挖掘。实验结果表明，Kernel Loss在时序特征捕获与分类泛化性上显著优于传统的发放率监督方法。本研究为构建高效、高鲁棒性的深层脉冲神经网络提供了实验支撑与理论依据。
+\end{abstract}
+
+\section{引言}
+
+\subsection{研究背景}
+脉冲神经网络（Spiking Neural Network, SNN）被称为第三代神经网络，通过离散的脉冲序列进行信息传递，具有事件驱动和时空稀疏性的特点。相比于传统的人工神经网络（ANN），SNN在处理神经形态数据及在类脑芯片的部署方面展现出极高的能效潜力。然而，SNN的训练长期面临“不可微”难题：脉冲发放函数（Heaviside step function）的导数在阈值处为无穷大，其余处为零，导致标准反向传播（BP）算法无法直接应用，这极大地限制了其深层网络的性能表现
+
+针对SNN的有监督学习，现有文献主要分为两个流派。一是\textbf{激活驱动（Activation-based）}方法，该方法将SNN展开为时间上的RNN，利用替代梯度（Surrogate Gradient）近似脉冲导数\cite{10.1162/neco_a_01367}。Zenke等提出的SuperSpike以及其他多尺度近似函数，成功解决了梯度消失问题，将SNN推向了CIFAR甚至ImageNet等大规模数据集。相关研究表明，替代梯度的形状对最终性能有显著影响，但其背后的动力学机制仍需进一步探讨。
+
+二是\textbf{事件驱动（Event-driven）}方法，侧重于精确脉冲时刻（Spike Timing）的优化\cite{NEURIPS2020_8bdb5058,NEURIPS2022_c4e5f4de}。Bohte等提出的SpikeProp算法及其后续改进，通过计算脉冲时刻对膜电位的导数来实现梯度反向传播。这种方法更符合SNN的时间编码（Temporal Coding）特性，但在深层网络和复杂数据集上的实现较为复杂。
+
+\subsection{本文工作}
+本文旨在复现并深入探究上述两种主流方法。第一阶段，我们在PyTorch框架下实现了基于替代梯度的卷积SNN，并引入深层神经网络的动力学相变理论\cite{schoenholz2017deep}分析梯度传播特性，最后研究了神经形态数据处理特性；第二阶段，我们构建了事件驱动的MLP网络，重点对比了Count、Softmax及Kernel三种不同时序损失函数对模型学习行为的影响，并给出了定量的性能分析。
+
+\section{阶段一：激活驱动的脉冲反向传播算法研究}
+\subsection{方法概述}
+
+\subsubsection{CIFAR10上的脉冲神经网络}
+
+LIF 神经元是一种简单的神经元模型\cite{hunsberger2015spikingdeepnetworkslif}。神经元建模为对输入电流 $I(t)$ 的漏电积分器
+
+\begin{equation}
+\tau_ {m} \frac {d v}{d t} = - (v (t) - E) + R I (t)
+\end{equation}
+
+相对于 IF 神经元无输入时膜电位 $\nu(t)$ 保持恒定，LIF 神经元引入了漏电项，无输入时膜电位恢复至静息电位 $E$ 。LIF 模型中并未明确对脉冲事件进行建模。当膜电位 $\nu(t)$ 达到某个阈值 $u_{th}$ 时会立即被重置为复位电位 $\nu_r$ ，然后继续泄漏积分过程。将 LIF 神经元用于神经网络时，一般将方程在时间上离散化。
+
+针对 CIFAR10 数据集的图像分类任务，我们设计卷积脉冲神经网络架构如图 \ref{fig:cifar10_arch} 所示。网络将静态图像在仿真时间步 $T$ 内重复输入网络，通过多个卷积层提取图像特征后，最后接入分类头实现分类任务。相对于传统人工神经网络，LIF 神经元在功能上替代了非线性激活函数（如ReLU、Sigmoid、Tanh）。LIF 神经元的替代梯度函数默认为 ATAN。由于在训练过程中出现了过拟合现象，引入 Dropout（ $p = 0.2$ ）进行了抑制。网络的最终输出为 8 个时间步的平均值。
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{assets/image1.png}
+    \caption{CIFAR10上的脉冲神经网络架构}
+    \label{fig:cifar10_arch}
+\end{figure}
+
+训练流程遵循监督学习范式。实验使用交叉熵损失函数，将网络在 $T$ 个时间步输出的平均发放率与真实标签进行计算。优化器选用Adam，初始学习率设为1e-3，并配合余弦退火学习率调度器动态调整学习率以促进模型收敛。为了增强模型的泛化能力，在数据预处理阶段引入了随机裁剪和水平翻转等数据增强技术。
+
+\subsubsection{替代梯度函数实现与研究}
+在脉冲神经网络（SNN）的训练过程中，由于神经元发放函数采用Heaviside阶跃函数，其导数在发放阈值处趋于无穷大，在其余位置则为零，这种不可微特性使得传统的反向传播（BP）算法难以直接应用。为此，本研究采用替代梯度（Surrogate Gradient）法，在反向传播阶段引入平滑的可微函数 $\sigma(x)$ 的导数 $\sigma'(x)$ 来近似阶跃函数的导数，从而实现梯度的跨时间步传递。
+
+为了探究不同替代梯度函数对网络训练性能的影响，本研究重点调研了三类具有代表性的函数形式\ref{fig:surrogate_functions} 。第一类是以SuperSpike为代表的代数衰减形式，其导数表达式为 $\sigma'(x) = 1/(\alpha|x|+1)^2$，具有明显的长拖尾特性；第二类是经典的Sigmoid导数形式，表达为 $\sigma'(x) = \sigma(\alpha x)(1-\sigma(\alpha x))$，提供更平滑的梯度支持；第三类是Esser等提出的分段线性三角形窗函数，定义为 $\sigma'(x) = \max(0, 1-\alpha|x|)$。在底层实现上，本研究基于PyTorch的\texttt{autograd.Function}构建了自定义算子，确保前向传播保持SNN的物理离散特性的同时，反向传播能够根据形状参数 $\alpha$ 进行精确的梯度更新。
+
+\begin{wrapfigure}{l}{0.45\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{assets/image2.png}
+    \caption{实现的各类替代梯度函数}
+    \label{fig:surrogate_functions}
+\end{wrapfigure}
+
+针对不同替代梯度的性能评测，本研究设计了一套严谨的超参数搜索实验方案。实验选取CIFAR-10作为测试基准，在固定的批大小（Batch Size=64）、仿真时间步（T=8）及优化器（Adam）条件下，对学习率（Learning Rate）与形状参数（Alpha）进行了大规模的网格搜索。搜索范围在对数空间内均匀采样，涵盖了6个学习率梯度与15个Alpha参数梯度，每种函数各完成90组配置实验。评估指标除了关注10个Epoch内达到的最佳测试精度外，还引入了基线达标速度，即记录模型首次达到70\%精度所需的Epoch数，以此衡量算法的收敛效率与鲁棒性。
+
+\subsubsection{神经形态数据集处理与训练}
+
+CIFAR10-DVS数据集\cite{10.3389/fnins.2017.00309}由神经形态视觉传感器（DVS）录制，其数据形式为异步的离散事件流 $E = \left\{e_i\right\}_{i = 1}^N$ ，其中每个事件 $e_i = (x_i,y_i,t_i,p_i)$ 包含空间坐标、时间戳和极性。对于神经形态数据集，常见的处理方式通常将 raw 数据处理为基于 frame 的格式，具体的处理方法为：将事件在时间上积分为 T 个 frame，每个 frame 变为两通道（对应正负极性）的二维图像。按 frame 的划分方法，将划分模式分为固定事件数模式（mode=count）与固定时间间隔模式（mode=time），分别对应每个 frame 中包含相同数量的事件或者跨越相同的时间长度。在数据增强方面，同样引入了随机水平翻转和随机裁剪，以提高模型的泛化能力。
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{assets/image4.png}
+    \caption{数据集预处理示意图。左图展示了原始事件流的时间分布，在mode=count模式下，将事件流切分为10帧后，第4帧高亮。右图为第4帧积分结果的可视化，红色表示正极性，蓝色表示负极性。}
+    \label{fig:data_preproc}
+\end{figure}
+
+CIFAR10-DVS 数据集上的卷积脉冲神经网络结构如图 \ref{fig:cifar10_dvs_arch} 所示。与 CIFAR-10 上的脉冲神经网络基本相同，每个时间步的输入不再相同，变为事件流中的各个 frame，另外增加了一个卷积层以改善模型的性能。根据替代梯度函数中的实验结果，采用了参数鲁棒性最强的 SuperSpike 替代梯度函数（ $\alpha = 4.0$ ）来实现误差的反向传播。分类头部分包含两个全连接层，同样在中间引入了 Dropout（ $p = 0.2$ ）抑制过拟合。网络的最终输出为 $T$ 个时间步的平均，表示最终的类别预测分数。
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{assets/image5.png}
+    \caption{CIFAR10-DVS上的脉冲神经网络架构}
+    \label{fig:cifar10_dvs_arch}
+\end{figure}
+
+\subsection{结果与讨论}
+
+\subsubsection{CIFAR-10上的脉冲神经网络}
+\begin{wrapfigure}{r}{0.45\textwidth} % 稍微缩小宽度
+    \centering
+    \begin{minipage}{\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{assets/image7.png}
+        \caption{训练损失与准确率曲线}
+        \label{fig:cifar10_loss}
+        \vspace{1em} % 增加两图之间的间距
+        \includegraphics[width=\linewidth]{assets/image6.png}
+        \caption{随机抽样推理结果}
+        \label{fig:cifar10_inference}
+    \end{minipage}
+\end{wrapfigure}
+
+实验在 NVIDIA GeForce RTX 3090 上进行了 100 轮的训练，设置时间步长 $T = 8$ 。损失与准确率曲线在图 \ref{fig:cifar10_loss} 中展示，在前 60 轮训练中，模型性能迅速提升。最终，模型在测试集上的准确率稳定在 85\% 左右。虽然通过 Dropout 和数据增强对过拟合进行了一定的控制，训练后期的训练集准确率持续上升并接近 90\% 以上，模型仍具有一定的过拟合倾向。图 \ref{fig:cifar10_inference} 所示为模型对随机抽样的推理结果展示，对于模型判断错误的样本，存在背景干扰大或特征模糊等情况，但人眼仍能快速有效分辨。
+
+考虑LIF神经元时间T内的平均发放率，在 $T = 8$ 的情况下，一个神经元只能发放0到8个脉冲。归一化后的输出值只能是： \{0,1 / 8,2 / 8,\dots ,1\} 。相比于ReLU32位浮点的连续输出，LIF神经元类似非线性激活函数的低精度量化。但与量化的不同之处在于，LIF神经元利用了时间编码，脉冲发放的具体时刻也可以携带信息。但低的时间步长还是会影响模型准确率。可以预计一定程度提高时间步长T可以进一步提高模型准确率。
+
+\subsubsection{替代梯度函数实现与研究}
+
+\begin{figure}[htbp] % 使用 htbp 给予 LaTeX 更多浮动空间弹性，比强制 [H] 更容易上去
+    \centering
+    % 第一张子图
+    \begin{subfigure}[b]{0.35\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{assets/image8.png}
+        \caption{SuperSpike、Sigmoid、Esser 准确率热力图对比}
+        \label{fig:heatmap}
+    \end{subfigure}
+    \hspace{2em} % 在两图之间插入弹性间距
+    % 第二张子图
+    \begin{subfigure}[b]{0.35\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{assets/image9.png}
+        \caption{基于雅可比矩阵奇异值分布的动力学相变理论图}
+        \label{fig:phase_theory}
+    \end{subfigure}
+    
+    \caption{准确率热力图与动力学相变理论图}
+    \label{fig:analysis}
+\end{figure}
+
+实验结果显示，三种替代梯度函数在经过充分的超参数搜索后，其峰值性能表现出显著的趋同性，最优精度均稳定在72\%至73\%之间，差距不足0.7\%。这一发现证明了在超参数配置得当的前提下，具体替代梯度的函数形状并非决定模型最终性能的核心因素。然而，不同函数在参数鲁棒性方面展现出显著差异（图 \ref{fig:heatmap} ）。SuperSpike在准确率热力图中表现出最宽广的高亮区域，证明其在较宽的学习率和Alpha范围内均能实现高效收敛；相比之下，Esser函数的高精度窗口较为狭窄，对Alpha参数的变化极其敏感。分析认为，Esser函数的三角形截断特性虽然计算开销最小，但若Alpha设置不当，极易导致梯度截断，影响深层信号的传递。
+
+
+为了进一步揭示训练失效背后的物理机制，本研究引入了Ganguli等人提出的深度学习理论\cite{schoenholz2017deep}，对深层SNN中的梯度传播率 $\chi$（即雅可比矩阵奇异值的均方值）进行了序参量分析。理论预言（图 \ref{fig:phase_theory} ），网络存在两个截然不同的物理相：有序相（$\chi < 1$）会导致梯度随深度指数级消失，而混沌相（$\chi > 1$）则引发梯度爆炸。
+
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=0.8\linewidth]{assets/image10.png}
+    \caption{准确率相变曲线、梯度传输率及发放率相变分布实验结果图}
+    \label{fig:phase_transition}
+\end{figure}
+
+通过实验观察发现（图 \ref{fig:phase_transition} ），SNN的最大准确率点恰好落在 $\chi$ 接近1的“混沌边缘”位置。在深度增加至7层的卷积层架构中，这种动力学相变表现得尤为剧烈。特别地，无论Alpha如何变化，神经元的平均发放率在前向传播中始终保持相对稳定，呈一条水平线分布。这说明在不可训练区域，神经元在物理上依然处于活跃发放状态，但在信息流层面，由于梯度流偏离了临界窗口，导致模型在反向传播中失效。由此可以得出结论：SNN训练过程中的性能崩溃本质上是一种“梯度传播相变”，而非“动力学活动相变”，这一结论为后续深层脉冲网络的初始化与参数优化提供了核心指导。
+
+\subsubsection{CIFAR10-DVS 上的脉冲神经网络}
+
+% r 代表靠右 (right), 0.45\textwidth 是图片占用的宽度
+% [13] 是可选参数，表示预留 13 行的高度。如果文字环绕提前结束，可以手动微调这个数字
+\begin{wrapfigure}[9]{r}{0.33\textwidth}
+    \centering
+    \vspace{-15pt} % 向上微调，使图片顶端与文字首行对齐
+    \includegraphics[width=\linewidth]{assets/image11.png}
+    \caption{数据集可视化结果}
+    \label{fig:dvs_viz}
+    \vspace{-10pt} % 减少图片下方多余的空白
+\end{wrapfigure}
+
+通过对 CIFAR10-DVS 数据集的可视化分析发现（图 \ref{fig:dvs_viz} ），由于 DVS 相机仅捕捉光强变化，生成的图像主要由物体边缘的稀疏点阵构成。与传统RGB图像相比，DVS图像丢失了纹理和颜色信息，且包含大量由背景噪声引起的离散噪点。较多的图片无法用人眼有效辨识。
+
+实验在 NVIDIA GeForce RTX 3090 平台上进行，模型采用 Adam 优化器（LR=1e-3, Weight Decay=1e-4）训练 50 个 Epoch。实验结果显示（图 \ref{fig:dvs_training} ），两种 frame 切分方式最终效果相似，测试集准确率均稳定在 60\% 左右。训练过程仍存在过拟合现象，可能原因为数据集样本量较小或时间步长 T 不够大。
+
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}{0.8\textwidth}
+        \centering
+        \begin{subfigure}[b]{0.48\linewidth}
+            \includegraphics[width=\textwidth]{assets/image12.png}
+        \end{subfigure}
+        \hfill
+        \begin{subfigure}[b]{0.48\linewidth}
+            \includegraphics[width=\textwidth]{assets/image13.png}
+        \end{subfigure}
+        \\
+        \begin{subfigure}[b]{0.48\linewidth}
+            \includegraphics[width=\textwidth]{assets/image14.png}
+        \end{subfigure}
+        \hfill
+        \begin{subfigure}[b]{0.48\linewidth}
+            \includegraphics[width=\textwidth]{assets/image15.png}
+        \end{subfigure}
+    \end{minipage}
+    \caption{CIFAR10-DVS数据集上的训练结果（左为mode=count，右为mode=time）}
+    \label{fig:dvs_training}
+\end{figure}
+
+\section{阶段二：事件驱动的反向传播算法}
+
+这部分报告的主要内容是事件驱动反向传播的脉冲神经网络的设计与实现过程。该系统主要针对MNIST手写数字识别任务，通过一个简单的两层多层感知机和自定义神经元算子来实现监督学习。
+
+系统的核心逻辑构建在 \texttt{network.py} 模块中。该模块定义了基于 Leaky Integrate-and-Fire（LIF）模型的自定义神经元算子 \texttt{EventDrivenNeuron}。在正向传播过程中，神经元通过离散时间步模拟膜电位的累积、发放及重置机制，并利用指数衰减的突触核将脉冲序列转化为突触电流。反向传播算法采用了事件驱动和激活驱动混合的实现策略。该算法记录了膜电位的时间演变轨迹，在膜电位接近阈值但未发放时（即连续区域）使用替代梯度来近似反向传播；在脉冲发放事件发生的时刻（即膜电位超过阈值），采用事件驱动的反向传播，只在这些时刻更新梯度。
+
+在网络结构方面，\texttt{Network}类实现了一个多层感知器（MLP）框架。其基础构建单元为\texttt{LinearLayer}，该层在传统全连接层的基础上集成了事件驱动神经元的动力学特性。在数据流经各层时，输入图像首先被扩展至时间维度，通过突触后电位（PSP）函数进行预处理，随后在各隐藏层中以脉冲形式进行异步传递。这种设计确保了网络能够处理时域信息，充分发挥了SNN在时间编码上的优势。
+
+为了引导网络学习特定的发放行为，\texttt{losses.py}提供了多种损失评估维度。系统支持基于脉冲计数的 \texttt{spike\_count} 损失，用于约束特定神经元的发放频率；同时也提供了基于PSP序列的 \texttt{spike\_kernel} 损失，通过对比输出与目标脉冲序列经过滤波后的相似度来优化精确的时间信息。此外，针对分类任务，系统还集成了累加时间步后的\texttt{spikesoft\_max}损失。这些损失函数通过自定义的\texttt{autograd.Function}实现，确保了梯度计算与SNN特有的时间动态保持一致。
+
+训练与评估流程由\texttt{train\_test.py}与\texttt{stats.py}协同管理。在训练循环中，系统通过\texttt{clip\_grad\_norm\_} 梯度裁剪技术保证了深度脉冲网络的数值稳定性，并使用\texttt{WeightClipper}将权重限制在合理区间，防止神经元陷入持续发放或永久沉默的状态。\texttt{LearningStats}类负责实时监控训练进展，记录每个Epoch的平均损失与分类准确率，并通过绘图功能直观展示学习曲线。为了提高训练效率并防止过拟合，\texttt{EarlyStopping}机制会持续监测验证集指标，在性能不再提升时自动停止训练并保存最优模型参数。
+
+
+整个项目的集成与执行在\texttt{snn\_event\_driven\_mlp\_mnist\_main.ipynb}中完成。该流程从MNIST数据集的加载开始通过配置神经元时间常数（如\texttt{tau\_m}和\texttt{tau\_s}）以及仿真时间步长（\texttt{n\_steps}），完成模型的初始化。实验结果证明，通过事件驱动的反向传播算法，该SNN模型能够快速收敛，在较低的时间分辨率下依然能达到较高的识别精度。
+
+\begin{wrapfigure}{r}{0.4\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{assets/image16.png}
+    \caption{训练损失对比图}
+    \label{fig:loss_compare}
+\end{wrapfigure}
+
+我们对使用三种不同损失函数得到训练和测试表现进行了可视化与分析，实验结果显示，三种损失函数展现出了不同的收敛特性与性能表现。从图 \ref{fig:loss_compare}（训练损失对比图）可以看到，softmax损失的数值量级最小且下降最为平缓，这源于其原理是将时间维度上的脉冲累加后进行概率分布对齐，本质上是将SNN的时域输出退化为静态概率模型进行监督。相比之下，count损失的初始值最高且收敛过程较慢，这是因为该方法仅对脉冲发放总数进行粗粒度的惩罚或奖励，由于缺乏对脉冲精确发放时间的约束，导致梯度信号在时间轴上的分布较为稀疏，模型在优化过程中需要更多的 epoch 来调整膜电位阈值的适应性。而 kernel 损失则处于中间位置，它通过 PSP 核将目标脉冲序列与实际输出进行逐时间步的对比，提供了最丰富的时间维度监督信号，从而在起始阶段就表现出极高的下降效率。
+
+在准确率表现方面，kernel损失在训练集（图 \ref{fig:train_acc} 训练准确率）和测试集（图 \ref{fig:test_acc} 测试准确率）上均显著优于其他两者，最终测试准确率稳定在 97\% 以上。这证明了在事件驱动的SNN中，利用核函数引入时序精确性监督能够最大程度激发神经元的动力学特性，使网络不仅学会了“发多少脉冲”，更学会了“在什么时候发脉冲”，从而提升了分类特征的辨
+识度。count损失虽然在训练后期表现出一定的竞争力，但其测试准确率存在波动，反映出仅依赖脉冲计数的监督逻辑在泛化性上存在瓶颈。最令人意外的是softmax损失，尽管其损失曲线看起来最为稳定，但其最终准确率却是三者中最低的。这揭示了在SNN训练中，使用跟SNN本身时序特性契合的损失函数比传统的静态softmax监督更有优势。
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{assets/image17.png}
+        \caption{训练准确率}
+        \label{fig:train_acc}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{assets/image18.png}
+        \caption{测试准确率}
+        \label{fig:test_acc}
+    \end{subfigure}
+    \caption{准确率对比}
+    \label{fig:acc_compare}
+\end{figure}
+
+混淆矩阵的横向对比（图 \ref{fig:confusion_matrix}）进一步刻画了不同损失函数对分类边界的塑造能力。对比而言，kernel损失的误判率是最低的，这说明精确的时间监督有助于神经元捕获手写数字微小的笔画拓扑差异。相反，count损失在某些数字对上的误判较为明显，其矩阵分布存在一定的长尾噪声，说明仅靠脉冲总数难以精细刻画复杂的空间特征。softmax的混淆矩阵则显示出相对均匀的误差分布，这种全局性的监督方式虽然能保证大致的分类正确，但在需要处理高维度非线性边界时显得力不从心。综合分析，对于追求高性能的事件驱动SNN模型，采用kernel损失是目前最优的路径，它能有效平衡模型的收敛速度与最终的分类精度。
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{assets/image19.png}
+    \caption{混淆矩阵对比}
+    \label{fig:confusion_matrix}
+\end{figure}
+
+\section{总结与讨论}
+
+\subsection{实验结论}
+本文系统性地研究了脉冲神经网络的两种学习范式。首先，在激活驱动的实验中，我们证实了\textbf{替代梯度的鲁棒性}\cite{10.1162/neco_a_01367}。同时通过雅可比矩阵奇异值分析，我们验证了SNN训练存在\textbf{动力学相变}现象\cite{schoenholz2017deep}，即网络性能在梯度传播率 $\chi \approx 1$ 的“混沌边缘”达到最优，这为深层SNN的参数初始化提供了重要的理论指导。
+
+其次，在事件驱动的实验中\cite{NEURIPS2022_c4e5f4de}，我们发现\textbf{损失函数的设计}对时序学习至关重要。Kernel Loss通过引入PSP核函数，成功地在离散的脉冲时刻中引入了连续的监督信号，相比于仅关注发放率的Count Loss和强行概率化的Softmax Loss，它能更好地捕捉手写数字的时空特征。
+
+\subsection{局限与展望}
+尽管取得了预期的实验结果，本研究仍存在一定局限。在CIFAR10-DVS数据集上，由于时间步长 $T$ 的限制，信息存在丢失, 导致准确率受限。此外，事件驱动算法仅在全连接层上验证，尚未扩展至卷积层。
+
+未来的工作将集中在两方面：一是探索\textbf{E-prop}等在线学习算法，尝试解决循环连接（RSNN）中的长时程依赖问题；二是结合阶段一的卷积架构与阶段二的时序损失函数，尝试在大规模神经形态数据集上实现更高效的事件驱动卷积网络。
+
+\bibliographystyle{unsrt}
+\small
+\bibliography{cite}
+
+\end{document}
